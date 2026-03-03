@@ -1,0 +1,30 @@
+# Environment
+.env
+firebase-credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Outputs
+outputs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase
+firebase-credentials.json

@@ -1,0 +1,60 @@
+{
+    "id": "suite-001",
+    "project_id": "demo-project",
+    "target_url": "https://example.com",
+    "test_cases": [
+        {
+            "id": "tc-001",
+            "project_id": "demo-project",
+            "title": "Verify Example.com Homepage Loads",
+            "description": "Navigate to example.com and verify the page title and heading are correct.",
+            "steps": [
+                {
+                    "action": "navigate",
+                    "value": "https://example.com",
+                    "description": "Navigate to the homepage"
+                },
+                {
+                    "action": "assert",
+                    "expected": "Example Domain",
+                    "description": "Verify the page title is 'Example Domain'"
+                },
+                {
+                    "action": "assert",
+                    "selector": "h1",
+                    "expected": "Example Domain",
+                    "description": "Verify the h1 heading says 'Example Domain'"
+                }
+            ],
+            "expected_result": "Homepage loads with correct title and heading",
+            "priority": "high",
+            "category": "functional"
+        },
+        {
+            "id": "tc-002",
+            "project_id": "demo-project",
+            "title": "Verify 'More information' Link Exists",
+            "description": "Check that the 'More information...' link is present on example.com.",
+            "steps": [
+                {
+                    "action": "navigate",
+                    "value": "https://example.com",
+                    "description": "Navigate to the homepage"
+                },
+                {
+                    "action": "snapshot",
+                    "description": "Take a page snapshot to inspect the DOM"
+                },
+                {
+                    "action": "assert",
+                    "selector": "a",
+                    "expected": "More information...",
+                    "description": "Verify the 'More information...' link is present"
+                }
+            ],
+            "expected_result": "The 'More information...' link should be visible on the page",
+            "priority": "medium",
+            "category": "ui"
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+# LLM & Agent Framework
+langchain-google-genai>=2.1.0
+langgraph>=0.4.0
+langchain-core>=0.3.0
+langchain-mcp-adapters>=0.1.0
+
+# Web Framework
+fastapi>=0.115.0
+uvicorn>=0.34.0
+
+# Firebase (Python Admin SDK)
+firebase-admin>=6.6.0
+
+# Data Models
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+
+# TUI
+textual>=1.0.0
+rich>=13.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+httpx>=0.28.0
