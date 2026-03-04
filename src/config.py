@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # --- Gemini ---
     GOOGLE_API_KEY: str
-    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_MODEL: str = "gemini-2.5-pro"
 
     # --- Firebase ---
     FIREBASE_PROJECT_ID: str = "agentic-tester-ded1d"
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     BROWSER_TYPE: str = "chromium"
 
     # --- Target ---
-    TARGET_URL: str = "https://example.com"
+    TARGET_URL: str = "https://www.wikipedia.org/"
 
     def get_output_path(self) -> Path:
         """Return resolved output directory, creating it if needed."""
