@@ -1,0 +1,1 @@
+The system shall allow users to log in with email and password. A 'Forgot Password' link should be available. Successful login should redirect to the dashboard.

@@ -147,6 +147,120 @@ class FirebaseClient:
             logger.error(f"Failed to fetch test cases: {e}")
             return []
 
+    async def save_website_context(
+        self,
+        url: str,
+        project_id: str,
+        context_data: dict,
+    ) -> bool:
+        """Save processed website context to Firestore for future use.
+        
+        Args:
+            url: The base website URL
+            project_id: Associated project
+            context_data: The processed LLM context dict
+        """
+        if not self.is_connected:
+            return False
+            
+        try:
+            # Create a simple safe ID based on URL
+            safe_id = url.replace("https://", "").replace("http://", "").replace("/", "_").strip("_")
+            if not safe_id:
+                safe_id = "default"
+                
+            doc_id = f"{project_id}_{safe_id}"
+            
+            doc_ref = self.db.collection("website_contexts").document(doc_id)
+            doc_ref.set({
+                "url": url,
+                "project_id": project_id,
+                "context_data": context_data,
+                "cached_at": firestore.SERVER_TIMESTAMP
+            })
+            logger.info(f"Cached website context for {url}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to cache website context: {e}")
+            return False
+
+    async def get_website_context(
+        self,
+        url: str,
+        project_id: str,
+    ) -> Optional[dict]:
+        """Retrieve cached website context from Firestore.
+        
+        Args:
+            url: The base website URL
+            project_id: Associated project
+            
+        Returns:
+            The context dict if found, else None
+        """
+        if not self.is_connected:
+            return None
+            
+        try:
+            safe_id = url.replace("https://", "").replace("http://", "").replace("/", "_").strip("_")
+            if not safe_id:
+                safe_id = "default"
+                
+            doc_id = f"{project_id}_{safe_id}"
+            
+            doc_ref = self.db.collection("website_contexts").document(doc_id)
+            doc = doc_ref.get()
+            
+            if doc.exists:
+                data = doc.to_dict()
+                logger.info(f"Retrieved cached website context for {url}")
+                return data.get("context_data")
+            
+            return None
+        except Exception as e:
+            logger.error(f"Failed to fetch cached website context: {e}")
+            return None
+
+    async def save_generated_test_cases(
+        self,
+        test_cases: list,
+    ) -> bool:
+        """Save a list of generated test cases to Firestore.
+        
+        Args:
+            test_cases: List of TestCase model objects
+        """
+        if not self.is_connected:
+            return False
+            
+        try:
+            batch = self.db.batch()
+            count = 0
+            
+            for tc in test_cases:
+                doc_ref = self.db.collection("test_cases").document(tc.id)
+                # Convert the model to a dict, excluding None values where appropriate
+                tc_data = tc.model_dump(mode="json", exclude_none=True)
+                tc_data["created_at"] = firestore.SERVER_TIMESTAMP
+                
+                batch.set(doc_ref, tc_data)
+                count += 1
+                
+                # Firestore batch limit is 500
+                if count >= 450:
+                    batch.commit()
+                    batch = self.db.batch()
+                    count = 0
+                    
+            if count > 0:
+                batch.commit()
+                
+            logger.info(f"Saved {len(test_cases)} generated test cases to Firebase")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to save generated test cases: {e}")
+            return False
+
     async def fetch_test_case_by_id(self, test_case_id: str) -> Optional[dict]:
         """Fetch a single test case by its document ID.
 

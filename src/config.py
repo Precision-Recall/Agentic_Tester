@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # --- Gemini ---
     GOOGLE_API_KEY: str
-    GEMINI_MODEL: str = "gemini-2.5-pro"
+    GEMINI_MODEL: str = "gemini-2.0-flash"
 
     # --- Firebase ---
     FIREBASE_PROJECT_ID: str = "agentic-tester-ded1d"
@@ -32,6 +32,12 @@ class Settings(BaseSettings):
 
     # --- Target ---
     TARGET_URL: str = "https://www.wikipedia.org/"
+
+    # --- Generator Agent ---
+    MAX_CRAWL_PAGES: int = 5
+    RAG_CHUNK_SIZE: int = 1000
+    RAG_CHUNK_OVERLAP: int = 200
+    RAG_TOP_K: int = 5
 
     def get_output_path(self) -> Path:
         """Return resolved output directory, creating it if needed."""
