@@ -6,6 +6,7 @@ Uses firebase-admin Python SDK with project agentic-tester-ded1d.
 
 import json
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -258,6 +259,61 @@ class FirebaseClient:
         doc_ref.set(summary.model_dump(mode="json"))
         logger.info(f"Saved execution summary {summary.execution_id} to Firestore")
         return summary.execution_id
+
+    async def save_execution_audit(self, execution_id: str, audit_data: dict) -> str:
+        """Save AI-inferred audit insights (failure analysis) to Firestore.
+
+        Args:
+            execution_id: The ID of the execution being audited.
+            audit_data: Dictionary containing `inferred_reason`, `severity`, etc.
+
+        Returns:
+            The Firestore document ID.
+        """
+        if not self.is_connected:
+            logger.warning("Firebase not connected. Audit not saved.")
+            return execution_id
+
+        doc_ref = self.db.collection("execution_audits").document(execution_id)
+        doc_ref.set(audit_data)
+        logger.info(f"Saved execution audit for {execution_id} to Firestore")
+        return execution_id
+
+    async def upload_report(self, file_path: str, execution_id: str) -> Optional[str]:
+        """Upload an MD report to Firebase Storage and return the public URL.
+
+        Args:
+            file_path: Local path to the MD report file.
+            execution_id: The execution ID to associate with the report.
+
+        Returns:
+            Public URL of the uploaded file, or None if upload fails.
+        """
+        if not self.is_connected:
+            logger.warning("Firebase not connected. Report stays local.")
+            return file_path
+
+        try:
+            bucket = storage.bucket(app=self.app)
+            blob_name = f"reports/{execution_id}/{Path(file_path).name}"
+            blob = bucket.blob(blob_name)
+            blob.upload_from_filename(file_path, content_type="text/markdown")
+            blob.make_public()
+            logger.info(f"Uploaded report: {blob.public_url}")
+
+            # Save reference in Firestore
+            doc_ref = self.db.collection("execution_reports").document(execution_id)
+            doc_ref.set({
+                "execution_id": execution_id,
+                "report_url": blob.public_url,
+                "filename": Path(file_path).name,
+                "uploaded_at": datetime.utcnow().isoformat(),
+            }, merge=True)
+
+            return blob.public_url
+        except Exception as e:
+            logger.error(f"Failed to upload report: {e}")
+            return file_path
 
     async def upload_screenshot(self, file_path: str) -> Optional[str]:
         """Upload a screenshot to Firebase Storage.

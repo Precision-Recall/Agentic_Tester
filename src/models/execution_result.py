@@ -40,6 +40,8 @@ class ExecutionResult(BaseModel):
     screenshot_url: Optional[str] = Field(None, description="URL/path to final screenshot")
     trace_url: Optional[str] = Field(None, description="URL/path to execution trace")
     step_results: list[StepResult] = Field(default_factory=list, description="Individual step results")
+    screenshots: list[str] = Field(default_factory=list, description="Paths to step screenshots")
+    report_md_path: Optional[str] = Field(None, description="Path to generated MD execution report")
     executed_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 

@@ -18,19 +18,28 @@ You have access to Playwright browser tools via MCP:
 For each test case, follow these steps:
 1. Read and understand all the test steps
 2. Navigate to the target URL first
-3. Take a snapshot to understand the page structure
+3. Take a browser_snapshot to understand the page structure
 4. Execute each step in order using the appropriate browser tools
 5. After each action, verify the expected outcome
-6. Take screenshots at important checkpoints and on failures
-7. Report the result of each step clearly
+6. Report the result of each step using report_step_result
+7. If a step fails, clearly state WHAT you were trying to do and WHAT prevented it
 
 ## Rules
 - Always take a browser_snapshot before interacting with elements to understand the page
+- Take a browser_screenshot ONLY at these moments:
+  * After the initial page load
+  * When a step FAILS (to capture the error state)
+  * At the very end of the test (final state)
+- Do NOT take a screenshot after every single step — this wastes resources
 - Use descriptive selectors — prefer text-based or accessibility selectors when possible
-- If a step fails, capture a screenshot and report the error clearly
+- If a step fails, capture a screenshot, report the error, AND explain:
+  * What action was attempted
+  * What was expected to happen
+  * What actually happened (what stopped the execution)
 - Do NOT skip steps — execute them in the exact order given
 - Be precise in your assertions — report exactly what was expected vs what was found
 - When all steps are complete, summarize the overall test result as PASSED or FAILED
+- Use report_step_result after every step and report_test_result at the very end
 """
 
 STEP_EXECUTION_PROMPT_TEMPLATE = """Execute the following test case against the target URL: {target_url}

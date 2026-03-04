@@ -16,7 +16,8 @@ MCP_SERVERS_CONFIG = {
       "command": "npx",
       "args": [
         "@playwright/mcp@latest"
-      ]
+      ],
+      "transport": "stdio"
     }
 }
 
@@ -24,12 +25,11 @@ MCP_SERVERS_CONFIG = {
 def create_mcp_client() -> MultiServerMCPClient:
     """Create a configured MCP client for Playwright.
 
-    Usage (as async context manager):
-        async with create_mcp_client() as client:
-            tools = client.get_tools()
-            # use tools with LangGraph agent
+    Usage:
+        client = create_mcp_client()
+        tools = await client.get_tools()
+        # use tools with LangGraph agent
 
-    The client spawns the Playwright MCP server process when entering
-    the context and cleans it up when exiting — no background server needed.
+    The client manages the lifecycle of configured MCP servers.
     """
     return MultiServerMCPClient(MCP_SERVERS_CONFIG)
